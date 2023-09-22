@@ -14,10 +14,5 @@ router.get('/', (_, res) => {
 });
 
 router.post(
-  '/cidades', 
-  CidadesController.createValidation,
-  CidadesController.create);
-
-
-
+  '/cidades', CidadesController.createValidation,CidadesController.create);
 export { router };
