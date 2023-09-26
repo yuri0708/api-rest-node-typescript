@@ -15,7 +15,7 @@ describe('Cidades - Create', () => {
 
 
     expect(res1.statusCode).toEqual(StatusCodes.CREATED);
-    expect(typeof res1.statusCode).toEqual('number');
+    expect(typeof res1.body).toEqual('number');
   });
   it('Tenta criar um registro com nome muito curto', async () => {
 
