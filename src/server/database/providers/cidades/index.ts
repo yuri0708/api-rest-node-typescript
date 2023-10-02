@@ -8,7 +8,7 @@ import * as Count from './Count';
 export const CidadesProvider = {
   ...deleteById,
   ...updateById,
-  ... getById,
+  ...getById,
   ...create,
   ...getAll,
   ...Count,
