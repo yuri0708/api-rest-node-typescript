@@ -4,19 +4,38 @@ import { StatusCodes } from 'http-status-codes';
 
 describe('Pessoas - DeleteById', () => {
 
+  let accessToken = '';
+  beforeAll(async () => {
+    const email = 'deleteById-pessoas@gmail.com';
+    await testServer.post('/cadastrar').send({ nome: 'Teste', email, senha: '123456'});
+    const signInRes = await testServer.post('/entrar').send({email, senha: '123456'});
+  
+    accessToken = signInRes.body.accessToken;
+  });
+
   let cidadeId: number | undefined = undefined;
   beforeAll(async () => {
     const resCidade = await testServer
       .post('/cidades')
+      .set({Authorization: `Bearer ${accessToken}`})
       .send({ nome: 'Teste'});
 
     cidadeId = resCidade.body;
   });
 
+  it('Tenta apagar registro sem usar token de autenticação', async () => {
+
+    const res1 = await testServer
+      .delete('/pessoas/1')
+      .send();
+    expect(res1.statusCode).toEqual(StatusCodes.UNAUTHORIZED);
+    expect(res1.body).toHaveProperty('errors.default');
+  });
   it('Apaga registro', async () => {
 
     const res1 = await testServer
       .post('/pessoas')
+      .set({Authorization: `Bearer ${accessToken}`})
       .send({ 
         cidadeId,
         email: 'yurifurbino@gmail.com',
@@ -27,6 +46,7 @@ describe('Pessoas - DeleteById', () => {
 
     const resApagada = await testServer
       .delete(`/pessoas/${res1.body}`)
+      .set({Authorization: `Bearer ${accessToken}`})
       .send();
 
     expect(resApagada.statusCode).toEqual(StatusCodes.NO_CONTENT);
@@ -35,9 +55,8 @@ describe('Pessoas - DeleteById', () => {
 
     const res1 = await testServer
       .delete('/pessoas/99999')
+      .set({Authorization: `Bearer ${accessToken}`})
       .send();
-
-
 
     expect(res1.statusCode).toEqual(StatusCodes.INTERNAL_SERVER_ERROR);
     expect(res1.body).toHaveProperty('errors.default');
